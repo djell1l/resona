@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="splash_background">#FFFFFBFE</color>
+    <color name="oneui_primary">#0072DE</color>
+    <color name="oneui_primary_dark">#005FB8</color>
 </resources>

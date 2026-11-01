@@ -76,7 +76,7 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.button.MaterialButton
+                    <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btn_play_mix"
                         style="@style/OneUI.ButtonStyleColored"
                         android:layout_width="wrap_content"
@@ -84,7 +84,8 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:text="@string/player_play"
-                        app:icon="@drawable/ic_oui_play" />
+                        android:drawableStart="@drawable/ic_oui_play"
+                        android:drawablePadding="6dp" />
                 </RelativeLayout>
 
             </dev.oneuiproject.oneui.widget.RoundedLinearLayout>

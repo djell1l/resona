@@ -9,7 +9,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.savoo.scclient.data.local.PlayHistoryDao
-import com.savoo.scclient.data.model.toTrack
+import com.savoo.scclient.data.model.Track
+import com.savoo.scclient.data.model.User
 import com.savoo.scclient.databinding.FragmentHistoryBinding
 import com.savoo.scclient.player.PlayerController
 import com.savoo.scclient.ui.adapters.TrackAdapter
@@ -52,8 +53,15 @@ class HistoryFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                playHistoryDao.observeRecent().collectLatest { events ->
-                    val tracks = events.map { it.toTrack() }
+                playHistoryDao.observeRecentTracks().collectLatest { recentList ->
+                    val tracks = recentList.map {
+                        Track(
+                            id = it.trackId,
+                            title = it.title,
+                            artworkUrl = it.artworkUrl,
+                            user = User(id = it.artistId, username = it.artistName)
+                        )
+                    }
                     trackAdapter.submitList(tracks)
                     val isEmpty = tracks.isEmpty()
                     binding.historyEmpty.visibility = if (isEmpty) View.VISIBLE else View.GONE

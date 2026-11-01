@@ -68,7 +68,7 @@ class ArtistFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             runCatching {
                 val user = trackRepository.getUser(userId)
-                val tracks = trackRepository.getArtistTracks(userId)
+                val tracks = trackRepository.getUserTracks(userId)
                 binding.artistName.text = user.username
                 binding.artistFollowersCount.text = "${user.followersCount ?: 0} followers"
                 binding.artistAvatar.load(user.avatarUrl?.replace("-large", "-t500x500")) {

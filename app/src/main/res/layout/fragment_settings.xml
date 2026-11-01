@@ -75,7 +75,7 @@
                             android:textColor="?android:attr/textColorSecondary" />
                     </LinearLayout>
 
-                    <com.google.android.material.button.MaterialButton
+                    <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btn_setting_login"
                         style="@style/OneUI.ButtonStyleColored"
                         android:layout_width="wrap_content"

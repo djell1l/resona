@@ -65,7 +65,7 @@ class SearchFragment : Fragment() {
                     1 -> SearchTab.ARTISTS
                     else -> SearchTab.ALBUMS
                 }
-                viewModel.onTabSelected(targetTab)
+                viewModel.onTabChange(targetTab)
                 updateCurrentAdapter(targetTab)
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -76,7 +76,7 @@ class SearchFragment : Fragment() {
     private fun setupAdapters() {
         trackAdapter = TrackAdapter(
             onTrackClick = { track ->
-                viewModel.playerController.play(track)
+                viewModel.playTrack(track)
             },
             onLikeClick = { track ->
                 viewModel.toggleFavorite(track)
@@ -111,18 +111,21 @@ class SearchFragment : Fragment() {
     private fun setupSearchInput() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                query?.let { viewModel.onQueryChanged(it) }
+                query?.let {
+                    viewModel.onQueryChange(it)
+                    viewModel.onQuerySubmit()
+                }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let { viewModel.onQueryChanged(it) }
+                newText?.let { viewModel.onQueryChange(it) }
                 return true
             }
         })
 
         binding.swipeRefresh.setOnRefreshListener {
-            viewModel.refresh()
+            viewModel.refreshResults()
             binding.swipeRefresh.isRefreshing = false
         }
     }

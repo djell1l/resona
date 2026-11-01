@@ -95,20 +95,20 @@ class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
             }
         }
 
-        binding.playerSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        binding.playerSeekbar.setOnSeekBarChangeListener(object : SeslSeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeslSeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser && currentTrack != null && currentTrack!!.durationMs > 0) {
                     val targetMs = (progress.toLong() * currentTrack!!.durationMs) / 1000L
                     binding.playerTimeCurrent.text = formatDuration(targetMs)
                 }
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            override fun onStartTrackingTouch(seekBar: SeslSeekBar?) {
                 isUserTracking = true
                 playerController.beginScrub()
             }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            override fun onStopTrackingTouch(seekBar: SeslSeekBar?) {
                 isUserTracking = false
                 val progress = seekBar?.progress ?: 0
                 if (currentTrack != null && currentTrack!!.durationMs > 0) {

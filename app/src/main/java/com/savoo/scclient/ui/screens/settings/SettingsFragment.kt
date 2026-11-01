@@ -107,10 +107,10 @@ class SettingsFragment : Fragment() {
                     }
                 }
                 launch {
-                    tokenStore.account.collectLatest { acct ->
-                        if (acct != null) {
-                            binding.settingAccountTitle.text = acct.username
-                            binding.settingAccountSubtitle.text = getString(R.string.login_logged_in)
+                    tokenStore.isLoggedIn.collectLatest { loggedIn ->
+                        if (loggedIn) {
+                            binding.settingAccountTitle.text = getString(R.string.login_logged_in)
+                            binding.settingAccountSubtitle.text = getString(R.string.account_title)
                             binding.btnSettingLogin.text = getString(R.string.account_log_out)
                             binding.btnSettingLogin.setOnClickListener {
                                 viewLifecycleOwner.lifecycleScope.launch { tokenStore.clear() }

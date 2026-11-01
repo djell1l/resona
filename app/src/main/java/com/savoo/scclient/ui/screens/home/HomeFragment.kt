@@ -79,9 +79,9 @@ class HomeFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnPlayMix.setOnClickListener {
-            val mixTracks = viewModel.mix.value
+            val mixTracks = viewModel.mixTracks.value
             if (mixTracks.isNotEmpty()) {
-                viewModel.playerController.playQueue(mixTracks, 0, repeatAll = true, tag = "home_mix")
+                viewModel.playMix(mixTracks)
             }
         }
 
@@ -98,13 +98,12 @@ class HomeFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.quickPicks.collectLatest { tracks ->
+                    viewModel.favoriteTracks.collectLatest { tracks ->
                         quickPickAdapter.submitList(tracks)
                     }
                 }
                 launch {
-                    viewModel.jumpBackIn.collectLatest { events ->
-                        val tracks = events.map { it.toTrack() }
+                    viewModel.recentTracks.collectLatest { tracks ->
                         recentAdapter.submitList(tracks)
                         binding.titleRecent.visibility = if (tracks.isEmpty()) View.GONE else View.VISIBLE
                         binding.rvRecent.visibility = if (tracks.isEmpty()) View.GONE else View.VISIBLE

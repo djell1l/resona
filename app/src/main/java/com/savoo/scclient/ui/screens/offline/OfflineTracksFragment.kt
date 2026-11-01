@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.savoo.scclient.data.model.toTrack
+import com.savoo.scclient.data.model.OfflineTrack
+import com.savoo.scclient.data.model.Track
+import com.savoo.scclient.data.model.User
 import com.savoo.scclient.databinding.FragmentOfflineTracksBinding
 import com.savoo.scclient.player.OfflineTrackManager
 import com.savoo.scclient.player.PlayerController
@@ -65,4 +67,14 @@ class OfflineTracksFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun OfflineTrack.toTrack(): Track = Track(
+        id = trackId,
+        title = title,
+        durationMs = durationMs,
+        artworkUrl = artworkUrl,
+        user = User(id = userId, username = username, avatarUrl = userAvatarUrl),
+        permalinkUrl = permalinkUrl,
+        genre = genre,
+    )
 }

@@ -24,6 +24,7 @@ class PlaylistFragment : Fragment() {
     private val binding get() = _binding!!
 
     @Inject lateinit var playlistsRepository: PlaylistsRepository
+    @Inject lateinit var trackRepository: com.savoo.scclient.data.repository.TrackRepository
     @Inject lateinit var playerController: PlayerController
     @Inject lateinit var favoritesRepository: com.savoo.scclient.data.repository.FavoritesRepository
 
@@ -77,7 +78,7 @@ class PlaylistFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             runCatching {
-                val playlist = playlistsRepository.getPlaylist(playlistId)
+                val playlist = trackRepository.getPlaylist(playlistId)
                 binding.playlistTitle.text = playlist.title
                 binding.playlistCreator.text = "By ${playlist.user.username} • ${playlist.trackCount} tracks"
                 binding.playlistArtwork.load(playlist.artworkUrl?.replace("-large", "-t500x500")) {

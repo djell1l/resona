@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Base One UI theme inherits from OneUITheme provided by oneui-design library -->
-    <style name="Theme.Resona" parent="OneUITheme" />
+    <style name="Theme.Resona" parent="OneUITheme">
+        <item name="colorPrimary">@color/oneui_primary</item>
+        <item name="colorPrimaryVariant">@color/oneui_primary_dark</item>
+        <item name="colorSecondary">@color/oneui_primary</item>
+        <item name="colorSecondaryVariant">@color/oneui_primary_dark</item>
+        <item name="colorSurface">?android:attr/colorBackground</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="colorOnSurface">?android:attr/textColorPrimary</item>
+    </style>
 
-    <style name="Theme.Resona.Splash" parent="OneUITheme">
+    <style name="Theme.Resona.Splash" parent="Theme.Resona">
         <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

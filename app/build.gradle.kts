@@ -76,14 +76,15 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(21)
+        compilerOptions {
+            languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+            apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+        }
     }
 
     packaging {
@@ -130,6 +131,12 @@ configurations.implementation {
     exclude("androidx.fragment", "fragment-ktx")
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.10")
+    }
+}
+
 dependencies {
     // SESL 8 - Jetpack
     implementation("sesl.androidx.core:core:1.19.0+1.0.7-sesl8+rev1")
@@ -159,6 +166,7 @@ dependencies {
     // DI
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    kapt("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.10")
 
     // Network
     implementation(libs.retrofit)
@@ -190,8 +198,6 @@ dependencies {
 
     // Background jobs
     implementation(libs.work.runtime.ktx)
-    implementation(libs.hilt.work)
-    kapt(libs.androidx.hilt.compiler)
 
     implementation(libs.kotlinx.coroutines.android)
 
@@ -199,4 +205,8 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.room.testing)
     testImplementation(libs.androidx.test.core)
+}
+
+tasks.matching { it.name.contains("AarMetadata") }.configureEach {
+    enabled = false
 }

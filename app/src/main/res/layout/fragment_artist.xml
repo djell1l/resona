@@ -60,14 +60,15 @@
                     android:textColor="?android:attr/textColorSecondary"
                     tools:text="150,000 followers" />
 
-                <com.google.android.material.button.MaterialButton
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_artist_follow"
                     style="@style/OneUI.ButtonStyleColored"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_marginTop="14dp"
                     android:text="@string/action_favorite"
-                    app:icon="@drawable/ic_oui_heart_outline" />
+                    android:drawableStart="@drawable/ic_oui_heart_outline"
+                    android:drawablePadding="6dp" />
             </dev.oneuiproject.oneui.widget.RoundedLinearLayout>
 
             <!-- Top Tracks -->

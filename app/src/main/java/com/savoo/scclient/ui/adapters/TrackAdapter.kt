@@ -51,7 +51,13 @@ class TrackAdapter(
             // Active playing highlight
             val isPlaying = track.id == currentPlayingTrackId
             if (isPlaying) {
-                binding.trackTitle.setTextColor(binding.root.context.getColor(R.color.sesl_primary_color_light))
+                val typedValue = android.util.TypedValue()
+                val color = if (binding.root.context.theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, typedValue, true)) {
+                    typedValue.data
+                } else {
+                    0xFF0072DE.toInt()
+                }
+                binding.trackTitle.setTextColor(color)
             } else {
                 binding.trackTitle.setTextColor(binding.root.context.getColor(android.R.color.tab_indicator_text))
             }

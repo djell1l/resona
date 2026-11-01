@@ -1,7 +1,6 @@
 package com.savoo.scclient
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import coil.ImageLoader
 import coil.ImageLoaderFactory
@@ -24,13 +23,12 @@ import javax.inject.Inject
 class SCApplication : Application(), ImageLoaderFactory, Configuration.Provider {
 
     @Inject lateinit var clientIdProvider: ClientIdProvider
-    @Inject lateinit var workerFactory: HiltWorkerFactory
     @Inject lateinit var autoExportManager: AutoExportManager
 
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder().setWorkerFactory(workerFactory).build()
+        get() = Configuration.Builder().build()
 
     override fun onCreate() {
         if (DuressWipe.isRestartProcess(this)) {

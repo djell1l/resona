@@ -2,7 +2,6 @@ package com.savoo.scclient.work
 
 import android.content.Context
 import android.net.Uri
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
@@ -12,9 +11,11 @@ import com.savoo.scclient.data.repository.EmptyFavoritesBackupException
 import com.savoo.scclient.data.repository.FavoritesExporter
 import com.savoo.scclient.data.repository.SettingsRepository
 import com.savoo.scclient.debug.DebugLog
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.first
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -24,15 +25,26 @@ private const val TAG = "AutoExport"
 private const val WORK_NAME = "favorites_auto_export"
 private const val MAX_ATTEMPTS = 3
 
-@HiltWorker
-class FavoritesAutoExportWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
-    @Assisted params: WorkerParameters,
-    private val settingsRepository: SettingsRepository,
-    private val exporter: FavoritesExporter,
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface FavoritesAutoExportWorkerEntryPoint {
+    fun settingsRepository(): SettingsRepository
+    fun favoritesExporter(): FavoritesExporter
+}
+
+class FavoritesAutoExportWorker(
+    appContext: Context,
+    params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
+        val entryPoint = EntryPointAccessors.fromApplication(
+            applicationContext,
+            FavoritesAutoExportWorkerEntryPoint::class.java,
+        )
+        val settingsRepository = entryPoint.settingsRepository()
+        val exporter = entryPoint.favoritesExporter()
+
         val settings = settingsRepository.settings.first()
         if (!settings.autoExportEnabled) return Result.success()
         val uri = settings.autoExportUri?.let(Uri::parse) ?: return Result.success()

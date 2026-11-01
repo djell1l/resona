@@ -57,10 +57,10 @@ interface FavoritesDao {
     @Query("SELECT trackId FROM favorites")
     fun observeTrackIds(): Flow<List<Long>>
 
-    @Query(SELECT * FROM favorites ORDER BY addedAt DESC)
+    @Query("SELECT * FROM favorites ORDER BY addedAt DESC")
     fun observeAllTracks(): Flow<List<FavoriteTrack>>
 
-    @Query(SELECT * FROM favorites ORDER BY addedAt DESC)
+    @Query("SELECT * FROM favorites ORDER BY addedAt DESC")
     suspend fun getAllTracks(): List<FavoriteTrack>
 
     @Query("SELECT * FROM favorites ORDER BY addedAt DESC LIMIT :limit")
