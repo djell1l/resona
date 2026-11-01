@@ -2,8 +2,6 @@ package com.savoo.scclient.data.repository
 
 import android.content.Context
 import android.os.Build
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -12,7 +10,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.savoo.scclient.data.model.UpdateChannel
 import com.savoo.scclient.ui.theme.AppColorTheme
-import com.savoo.scclient.ui.theme.OrangeSeed
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.map
 import java.util.Locale
@@ -121,7 +118,7 @@ data class AppSettings(
     val crossfadeEnabled: Boolean = false,
     val pauseForOtherApps: Boolean = true,
     val seekBarStyle: SeekBarStyle = SeekBarStyle.WAVY,
-    val customSeedColor: Color = OrangeSeed.Primary,
+    val customSeedColor: Int = 0xFFFF5500.toInt(),
     val homeSections: List<HomeSectionConfig> = DefaultHomeSections,
     val playerBackgroundStyle: PlayerBackgroundStyle = PlayerBackgroundStyle.ORB,
     val artworkShape: ArtworkShape = ArtworkShape.SQUARE,
@@ -131,7 +128,7 @@ data class AppSettings(
     val fontRoundness: Int = DefaultFontRoundness,
     val playerStyle: PlayerStyle = PlayerStyle.PIXEL,
     val backgroundMode: AppBackgroundMode = AppBackgroundMode.DYNAMIC,
-    val backgroundCustomColor: Color = Color(0xFF1B1B1F),
+    val backgroundCustomColor: Int = 0xFF1B1B1F.toInt(),
     val playerHintShown: Boolean = false,
     val linkHintDismissed: Boolean = false,
     val recapDismissedYear: Int = 0,
@@ -256,7 +253,7 @@ class SettingsRepository @Inject constructor(
             seekBarStyle = prefs[Keys.SEEK_BAR_STYLE]?.let {
                 runCatching { SeekBarStyle.valueOf(it) }.getOrNull()
             } ?: SeekBarStyle.WAVY,
-            customSeedColor = prefs[Keys.CUSTOM_SEED_COLOR]?.let { Color(it) } ?: OrangeSeed.Primary,
+            customSeedColor = prefs[Keys.CUSTOM_SEED_COLOR] ?: 0xFFFF5500.toInt(),
             homeSections = parseHomeSections(prefs[Keys.HOME_SECTIONS]),
             // BLURRED_ARTWORK is hidden from the picker (kept working in code, just not offered as a
             // choice) - coerce anyone still holding it from before back to the default.
@@ -276,7 +273,7 @@ class SettingsRepository @Inject constructor(
             backgroundMode = prefs[Keys.BACKGROUND_MODE]?.let {
                 runCatching { AppBackgroundMode.valueOf(it) }.getOrNull()
             } ?: AppBackgroundMode.DYNAMIC,
-            backgroundCustomColor = prefs[Keys.BACKGROUND_CUSTOM_COLOR]?.let { Color(it) } ?: Color(0xFF1B1B1F),
+            backgroundCustomColor = prefs[Keys.BACKGROUND_CUSTOM_COLOR] ?: 0xFF1B1B1F.toInt(),
             playerHintShown = prefs[Keys.PLAYER_HINT_SHOWN] ?: false,
             linkHintDismissed = prefs[Keys.LINK_HINT_DISMISSED] ?: false,
             recapDismissedYear = prefs[Keys.RECAP_DISMISSED_YEAR] ?: 0,
@@ -414,8 +411,8 @@ class SettingsRepository @Inject constructor(
         context.dataStore.edit { it[Keys.SEEK_BAR_STYLE] = style.name }
     }
 
-    suspend fun setCustomSeedColor(color: Color) {
-        context.dataStore.edit { it[Keys.CUSTOM_SEED_COLOR] = color.toArgb() }
+    suspend fun setCustomSeedColor(color: Int) {
+        context.dataStore.edit { it[Keys.CUSTOM_SEED_COLOR] = color }
     }
 
     suspend fun setHomeSections(sections: List<HomeSectionConfig>) {
@@ -454,8 +451,8 @@ class SettingsRepository @Inject constructor(
         context.dataStore.edit { it[Keys.BACKGROUND_MODE] = mode.name }
     }
 
-    suspend fun setBackgroundCustomColor(color: Color) {
-        context.dataStore.edit { it[Keys.BACKGROUND_CUSTOM_COLOR] = color.toArgb() }
+    suspend fun setBackgroundCustomColor(color: Int) {
+        context.dataStore.edit { it[Keys.BACKGROUND_CUSTOM_COLOR] = color }
     }
 
     suspend fun setPlayerHintShown(value: Boolean) {

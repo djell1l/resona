@@ -65,10 +65,7 @@ import org.json.JSONObject
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import javax.inject.Singleton
-import androidx.compose.ui.graphics.Color
-import com.savoo.scclient.ui.components.GeneratedArtworkDebugState
-import com.savoo.scclient.ui.components.generatedArtworkSeedColor
-
+import com.savoo.scclient.ui.util.ColorUtilsHelper
 data class PlaybackState(
     val currentTrack: Track? = null,
     val isPlaying: Boolean = false,
@@ -127,7 +124,7 @@ class PlayerController @Inject constructor(
 
     private val _state = MutableStateFlow(PlaybackState())
     val state = _state.asStateFlow()
-    private val _seedColor = MutableStateFlow<Color?>(null)
+    private val _seedColor = MutableStateFlow<Int?>(null)
     val seedColor = _seedColor.asStateFlow()
     private val _skippedTrackEvents = MutableSharedFlow<SkippedTrack>(extraBufferCapacity = 1)
     val skippedTrackEvents = _skippedTrackEvents.asSharedFlow()
@@ -1478,7 +1475,7 @@ class PlayerController @Inject constructor(
         val cachedUrl = prefs.getString("seed_color_url", null)
         if (cachedUrl != null && cachedUrl == track.artworkUrl && prefs.contains("seed_color")) {
             seedColorUrl = cachedUrl
-            _seedColor.value = Color(prefs.getInt("seed_color", 0))
+            _seedColor.value = prefs.getInt("seed_color", 0)
         }
         _state.update {
             it.copy(
@@ -1583,12 +1580,12 @@ class PlayerController @Inject constructor(
     // these run at wildly different speeds (cache hit vs network fetch vs decode), so without it
     // whichever request happens to finish last wins, which is rarely the track now playing.
     private fun extractSeedColor(sourceUrl: String?, title: String) {
-        val artworkUrl = sourceUrl.takeUnless { GeneratedArtworkDebugState.forceEverywhere.value }
+        val artworkUrl = sourceUrl.takeUnless { false }
         val key = artworkUrl ?: "generated:$title"
         if (key == seedColorUrl && (_seedColor.value != null || seedColorJob?.isActive == true)) return
         seedColorJob?.cancel()
         seedColorUrl = key
-        val fallback = generatedArtworkSeedColor(title)
+        val fallback = ColorUtilsHelper.generatedArtworkSeedColor(title)
         if (artworkUrl == null) {
             _seedColor.value = fallback
             return
@@ -1604,7 +1601,7 @@ class PlayerController @Inject constructor(
                 val swatch = bitmap?.let { Palette.from(it).generate() }?.let { it.vibrantSwatch ?: it.dominantSwatch }
                 ensureActive()
                 if (swatch != null) {
-                    _seedColor.value = Color(swatch.rgb)
+                    _seedColor.value = swatch.rgb
                     prefs.edit()
                         .putString("seed_color_url", artworkUrl)
                         .putInt("seed_color", swatch.rgb)

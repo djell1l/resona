@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.compose.compiler)
 }
 
 val localProps = Properties().apply {
@@ -14,8 +13,6 @@ val localProps = Properties().apply {
     if (f.exists()) f.inputStream().use { load(it) }
 }
 
-// Ships the English strings.xml inside the APK so "Custom language" can hand the user a template
-// that always matches the installed build, instead of reflecting over R.string at runtime.
 val copyStringsTemplate by tasks.registering(Copy::class) {
     from(layout.projectDirectory.file("src/main/res/values/strings.xml"))
     into(layout.buildDirectory.dir("generated/i18nAssets"))
@@ -30,14 +27,10 @@ android {
         applicationId = "com.savoo.scclient"
         minSdk = 26
         targetSdk = 35
-        // Canary CI builds override this via -PappVersionCode so each nightly build's
-        // BuildConfig.VERSION_CODE keeps increasing without editing this file every run.
         versionCode = (project.findProperty("appVersionCode") as String?)?.toIntOrNull() ?: 17
-        versionName = "2.0"
+        versionName = "2.0-oneui8"
 
         buildConfigField("String", "SC_CLIENT_ID_FALLBACK", "\"\"")
-        // BETA Telegram import: get these at https://my.telegram.org/apps and put them in local.properties
-        // as TELEGRAM_API_ID / TELEGRAM_API_HASH - never commit real values here.
         buildConfigField("String", "TELEGRAM_API_ID", "\"${localProps.getProperty("TELEGRAM_API_ID", "0")}\"")
         buildConfigField("String", "TELEGRAM_API_HASH", "\"${localProps.getProperty("TELEGRAM_API_HASH", "")}\"")
     }
@@ -57,9 +50,6 @@ android {
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
-        // Nightly builds off main, published as GitHub pre-releases by
-        // .github/workflows/canary.yml. Same signing key as release but a distinct
-        // applicationId/versionName suffix so it can be installed side-by-side.
         create("canary") {
             initWith(release)
             applicationIdSuffix = ".canary"
@@ -72,12 +62,10 @@ android {
     }
 
     buildFeatures {
-        compose = true
+        viewBinding = true
         buildConfig = true
     }
 
-    // BETA Telegram import bundles prebuilt TDLib .so per ABI (~16-23MB each). Split into
-    // per-ABI APKs so a device only downloads its own native lib instead of both.
     splits {
         abi {
             isEnable = true
@@ -124,27 +112,55 @@ tasks.named("preBuild") {
     dependsOn(copyStringsTemplate)
 }
 
+configurations.implementation {
+    exclude("androidx.core", "core")
+    exclude("androidx.core", "core-ktx")
+    exclude("androidx.customview", "customview")
+    exclude("androidx.coordinatorlayout", "coordinatorlayout")
+    exclude("androidx.drawerlayout", "drawerlayout")
+    exclude("androidx.viewpager2", "viewpager2")
+    exclude("androidx.viewpager", "viewpager")
+    exclude("androidx.appcompat", "appcompat")
+    exclude("androidx.fragment", "fragment")
+    exclude("androidx.preference", "preference")
+    exclude("androidx.recyclerview", "recyclerview")
+    exclude("androidx.slidingpanelayout", "slidingpanelayout")
+    exclude("androidx.swiperefreshlayout", "swiperefreshlayout")
+    exclude("com.google.android.material", "material")
+    exclude("androidx.fragment", "fragment-ktx")
+}
+
 dependencies {
-    implementation(libs.core.ktx)
+    // SESL 8 - Jetpack
+    implementation("sesl.androidx.core:core:1.19.0+1.0.7-sesl8+rev1")
+    implementation("sesl.androidx.core:core-ktx:1.19.0+1.0.0-sesl8+rev1")
+    implementation("sesl.androidx.appcompat:appcompat:1.8.0+1.0.21-sesl8+rev3")
+    implementation("sesl.androidx.fragment:fragment:1.9.0+1.0.5-sesl8+rev1")
+    implementation("sesl.androidx.recyclerview:recyclerview:1.4.0+1.0.12-sesl8+rev3")
+    implementation("sesl.androidx.preference:preference:1.2.1+1.0.0-sesl8+rev1")
+
+    // SESL 8 - Material
+    implementation("sesl.com.google.android.material:material:1.12.0+1.0.32-sesl8+rev3")
+
+    // Composants One UI 8
+    implementation("io.github.tribalfs:oneui-design:0.9.19+oneui8")
+    implementation("io.github.oneuiproject:icons:1.1.0")
+
+    // Navigation and layout
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.5")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.5")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+    implementation(libs.activity.compose) // for ComponentActivity / OnBackPressedDispatcher
     implementation(libs.lifecycle.runtime.ktx)
-    implementation(libs.lifecycle.viewmodel.compose)
-    implementation(libs.lifecycle.runtime.compose)
-    implementation(libs.activity.compose)
 
-    implementation(platform(libs.compose.bom))
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.graphics)
-    implementation(libs.compose.ui.tooling.preview)
-    implementation(libs.compose.material3)
-    implementation(libs.compose.material.icons.extended)
-    debugImplementation(libs.compose.ui.tooling)
+    // Image loading for XML views
+    implementation("io.coil-kt:coil:2.7.0")
 
-    implementation(libs.navigation.compose)
-
+    // DI
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
 
+    // Network
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.okhttp)
@@ -153,30 +169,26 @@ dependencies {
     implementation(libs.moshi.kotlin)
     implementation(libs.jsoup)
 
+    // Playback (Media3)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.exoplayer.hls)
     implementation(libs.media3.session)
     implementation(libs.media3.common)
 
+    // Room DB
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
     implementation(libs.room.paging)
     implementation(libs.paging.runtime)
-    implementation(libs.paging.compose)
 
-    implementation(libs.coil.compose)
-    implementation(libs.haze)
-
+    // Palette & Security & Storage
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
-    implementation("sh.calvin.reorderable:reorderable:3.1.0")
-
     implementation(libs.datastore.preferences)
     implementation(libs.security.crypto)
     implementation(libs.biometric)
-    implementation(libs.fragment.ktx)
 
+    // Background jobs
     implementation(libs.work.runtime.ktx)
     implementation(libs.hilt.work)
     kapt(libs.androidx.hilt.compiler)

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.oneuiproject.oneui.widget.RoundedFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mini_player_root"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="?attr/roundedCornerColor"
+    android:clickable="true"
+    android:focusable="true"
+    android:elevation="6dp"
+    app:roundedCorners="all">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="10dp"
+        android:gravity="center_vertical">
+
+        <!-- Album artwork -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/mini_player_art"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            android:src="@drawable/logo_git"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.OneUI.ArtworkSmall" />
+
+        <!-- Track info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/mini_player_art"
+            android:layout_toStartOf="@id/mini_player_controls"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/mini_player_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="Track Title" />
+
+            <TextView
+                android:id="@+id/mini_player_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="13sp"
+                android:textColor="?android:attr/textColorSecondary"
+                tools:text="Artist Name" />
+
+        </LinearLayout>
+
+        <!-- Mini Player Action Controls -->
+        <LinearLayout
+            android:id="@+id/mini_player_controls"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/mini_player_like"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_oui_heart_outline"
+                android:tint="?attr/colorControlNormal"
+                android:contentDescription="@string/action_favorite" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/mini_player_play_pause"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_oui_play"
+                android:tint="?attr/colorControlNormal"
+                android:contentDescription="@string/player_play" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/mini_player_next"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_oui_skip_forward"
+                android:tint="?attr/colorControlNormal"
+                android:contentDescription="@string/player_skip_next" />
+
+        </LinearLayout>
+
+        <!-- Progress Bar at bottom of mini player -->
+        <androidx.appcompat.widget.SeslProgressBar
+            android:id="@+id/mini_player_progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_alignParentBottom="true"
+            android:max="1000"
+            android:progress="0" />
+
+    </RelativeLayout>
+
+</dev.oneuiproject.oneui.widget.RoundedFrameLayout>

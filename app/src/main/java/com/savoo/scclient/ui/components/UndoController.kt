@@ -1,7 +1,7 @@
 package com.savoo.scclient.ui.components
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,7 +14,7 @@ import javax.inject.Singleton
 data class UndoAction(
     @StringRes val messageRes: Int,
     val messageArgs: List<Any> = emptyList(),
-    val icon: ImageVector? = null,
+    @DrawableRes val iconRes: Int? = null,
     val onUndo: suspend () -> Unit,
     val id: Long = System.nanoTime(),
 )

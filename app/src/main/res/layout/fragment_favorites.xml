@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.oneuiproject.oneui.layout.ToolbarLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:expanded="true"
+    app:expandable="true"
+    app:title="@string/nav_favorites">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Rounded Tabs for Library Categories -->
+        <dev.oneuiproject.oneui.widget.RoundedTabLayout
+            android:id="@+id/fav_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="8dp"
+            app:tabGravity="fill"
+            app:tabMode="fixed" />
+
+        <!-- Header Actions: Shuffle All & Sort -->
+        <RelativeLayout
+            android:id="@+id/fav_actions_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="6dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_fav_shuffle"
+                style="@style/OneUI.ButtonStyleColored"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_alignParentStart="true"
+                android:text="@string/player_shuffle"
+                android:textSize="13sp"
+                app:icon="@drawable/ic_oui_shuffle"
+                app:iconSize="18dp" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_fav_sort"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:layout_alignParentEnd="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_oui_more"
+                android:tint="?attr/colorControlNormal"
+                android:contentDescription="@string/action_sort" />
+        </RelativeLayout>
+
+        <!-- Library Content Frame -->
+        <dev.oneuiproject.oneui.widget.RoundedFrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:roundedCorners="top_left|top_right">
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/fav_refresh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_favorites"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="?android:colorBackground"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_track" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+            <!-- Auto-hide Index Scroll View -->
+            <dev.oneuiproject.oneui.widget.AutoHideIndexScrollView
+                android:id="@+id/fav_index_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginBottom="60dp" />
+
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/fav_empty_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_oui_heart_outline"
+                    android:tint="?android:attr/textColorSecondary"
+                    android:contentDescription="@string/nav_favorites" />
+
+                <TextView
+                    android:id="@+id/fav_empty_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/favorites_empty"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorSecondary" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.SeslProgressBar
+                android:id="@+id/fav_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </dev.oneuiproject.oneui.widget.RoundedFrameLayout>
+
+    </LinearLayout>
+
+</dev.oneuiproject.oneui.layout.ToolbarLayout>

@@ -13,6 +13,9 @@
     <uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL"
         tools:ignore="ProtectedPermissions" />
 
+    <!-- oneui-icons minSdk is 23 -->
+    <uses-sdk tools:overrideLibrary="dev.oneuiproject.oneui" />
+
     <application
         android:name=".SCApplication"
         android:allowBackup="true"
@@ -22,10 +25,29 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Resona"
+        android:theme="@style/OneUITheme"
         android:networkSecurityConfig="@xml/network_security_config"
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="33">
+
+        <meta-data
+            android:name="SamsungBasicInteraction"
+            android:value="SEP10" />
+
+        <meta-data
+            android:name="com.samsung.android.icon_container.has_icon_container"
+            android:value="true" />
+        <meta-data
+            android:name="com.samsung.android.icon_container.feature_appicon"
+            android:value="ADAPTIVEICON_SHADOW" />
+
+        <meta-data
+            android:name="theming-meta"
+            android:value="meta_998_sesl_app" />
+
+        <meta-data
+            android:name="theming-meta-xml"
+            android:value="@xml/meta_998_sesl_app" />
 
         <activity
             android:name=".MainActivity"
@@ -33,7 +55,7 @@
             android:launchMode="singleTask"
             android:resizeableActivity="true"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|density"
-            android:theme="@style/Theme.Resona.Splash">
+            android:theme="@style/OneUITheme">
 
             <!-- OAuth redirect: resona://oauth/callback -->
             <intent-filter>
@@ -54,17 +76,14 @@
                 <data android:scheme="https" android:host="on.soundcloud.com" />
             </intent-filter>
 
-            <!-- Lets Resona show up in other apps' "Share" sheet (e.g. sharing a track link out of
-                 Chrome or the official SoundCloud app), which ACTION_VIEW alone doesn't cover. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
 
-        <!-- App icon variants (Settings > App Icon). Only one is enabled at a time; toggled at
-             runtime via PackageManager.setComponentEnabledSetting from AppIconManager. -->
         <activity-alias
             android:name=".LauncherNormal"
             android:targetActivity=".MainActivity"

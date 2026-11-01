@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/player_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground"
+    android:orientation="vertical">
+
+    <!-- One UI 8 BottomSheet Drag Handle / Top Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_player_collapse"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_oui_back"
+            android:tint="?attr/colorControlNormal"
+            android:contentDescription="@string/action_close" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/player_now_playing"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_player_more"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_oui_more"
+            android:tint="?attr/colorControlNormal"
+            android:contentDescription="@string/action_more" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="always">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="28dp">
+
+            <!-- Large Artwork with One UI rounded continuous curvature -->
+            <dev.oneuiproject.oneui.widget.RoundedFrameLayout
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="24dp"
+                android:elevation="8dp"
+                app:roundedCorners="all">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/player_artwork"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/logo_git"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.OneUI.ArtworkLarge" />
+            </dev.oneuiproject.oneui.widget.RoundedFrameLayout>
+
+            <!-- Title & Artist Info -->
+            <TextView
+                android:id="@+id/player_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:singleLine="true"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="Resona Track Title" />
+
+            <TextView
+                android:id="@+id/player_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textColor="?attr/colorPrimaryDark"
+                tools:text="Artist Name" />
+
+            <!-- SeekBar & Timestamps -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.SeslSeekBar
+                    android:id="@+id/player_seekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="1000"
+                    android:progress="0" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="12dp">
+
+                    <TextView
+                        android:id="@+id/player_time_current"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:text="00:00"
+                        android:textSize="12sp"
+                        android:textColor="?android:attr/textColorSecondary" />
+
+                    <TextView
+                        android:id="@+id/player_time_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="00:00"
+                        android:textSize="12sp"
+                        android:textColor="?android:attr/textColorSecondary" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <!-- Main Playback Controls -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_player_shuffle"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_oui_shuffle"
+                    android:tint="?attr/colorControlNormal"
+                    android:contentDescription="@string/player_shuffle" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_player_prev"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="12dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_oui_skip_backward"
+                    android:tint="?attr/colorControlNormal"
+                    android:contentDescription="@string/player_skip_prev" />
+
+                <!-- Big Central Play/Pause FAB Button -->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_player_play_pause"
+                    style="@style/OneUI.FloatingActionButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:src="@drawable/ic_oui_play"
+                    app:fabSize="normal"
+                    android:contentDescription="@string/player_play" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_player_next"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_oui_skip_forward"
+                    android:tint="?attr/colorControlNormal"
+                    android:contentDescription="@string/player_skip_next" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_player_repeat"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_oui_repeat"
+                    android:tint="?attr/colorControlNormal"
+                    android:contentDescription="@string/player_repeat" />
+
+            </LinearLayout>
+
+            <!-- Bottom Action Row: Favorite, Sound Mode, Lyrics, Queue -->
+            <dev.oneuiproject.oneui.widget.RoundedLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:layout_marginTop="24dp"
+                android:background="?attr/roundedCornerColor"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:roundedCorners="all">
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_player_fav"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_oui_heart_outline"
+                    android:tint="?attr/colorControlNormal"
+                    android:contentDescription="@string/action_favorite" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_player_sound_mode"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_oui_sound_mode"
+                    android:tint="?attr/colorControlNormal"
+                    android:contentDescription="Sound mode" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_player_lyrics"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_oui_lyrics"
+                    android:tint="?attr/colorControlNormal"
+                    android:contentDescription="@string/player_lyrics" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btn_player_queue"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_oui_queue"
+                    android:tint="?attr/colorControlNormal"
+                    android:contentDescription="@string/player_queue" />
+
+            </dev.oneuiproject.oneui.widget.RoundedLinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

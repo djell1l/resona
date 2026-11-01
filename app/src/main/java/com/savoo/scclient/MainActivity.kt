@@ -5,49 +5,44 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import android.webkit.WebView
 import android.widget.Toast
-import androidx.activity.SystemBarStyle
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.luminance
-import androidx.core.view.WindowCompat
-import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.util.UnstableApi
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import coil.load
+import com.google.android.material.tabs.TabLayout
+import com.savoo.scclient.data.model.Track
+import com.savoo.scclient.data.remote.WebViewApiBridge
 import com.savoo.scclient.data.repository.DarkModeOption
 import com.savoo.scclient.data.repository.LanguageOption
 import com.savoo.scclient.data.repository.SettingsRepository
 import com.savoo.scclient.data.repository.systemDefaultLanguage
+import com.savoo.scclient.databinding.ActivityMainBinding
 import com.savoo.scclient.debug.CrashReporter
 import com.savoo.scclient.i18n.CustomStrings
 import com.savoo.scclient.i18n.CustomStringsDisableReason
 import com.savoo.scclient.i18n.withCustomStrings
-import com.savoo.scclient.data.remote.WebViewApiBridge
 import com.savoo.scclient.player.PlayerController
 import com.savoo.scclient.security.AppLockStore
-import com.savoo.scclient.security.DuressWipe
 import com.savoo.scclient.ui.navigation.DeepLinkTarget
-import com.savoo.scclient.ui.navigation.RootScreen
-import com.savoo.scclient.ui.screens.lock.LockScreen
-import com.savoo.scclient.ui.screens.onboarding.EulaGateScreen
-import com.savoo.scclient.ui.screens.onboarding.OnboardingScreen
-import com.savoo.scclient.ui.theme.AppColorTheme
-import com.savoo.scclient.ui.theme.ResonaTheme
+import com.savoo.scclient.ui.navigation.ShortcutTarget
+import com.savoo.scclient.ui.screens.player.PlayerBottomSheetFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
 @UnstableApi
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var playerController: PlayerController
@@ -55,10 +50,10 @@ class MainActivity : FragmentActivity() {
     @Inject lateinit var appLockStore: AppLockStore
     @Inject lateinit var dataDomeChallenge: com.savoo.scclient.data.remote.DataDomeChallenge
 
-    private var deepLinkTarget by mutableStateOf<DeepLinkTarget>(DeepLinkTarget.None)
-    private var deepLinkKey by mutableIntStateOf(0)
-    private var locked by mutableStateOf(false)
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
     private var apiWebView: WebView? = null
+    private var currentPlayingTrack: Track? = null
 
     override fun attachBaseContext(newBase: Context) {
         val lang = try {
@@ -94,171 +89,124 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         applyOrientationLock()
-        locked = appLockStore.needsUnlock()
 
-        when (CustomStrings.consumeDisableNotice(this)) {
-            CustomStringsDisableReason.CRASHES ->
-                Toast.makeText(this, R.string.custom_language_safe_mode, Toast.LENGTH_LONG).show()
-            CustomStringsDisableReason.TOO_LARGE ->
-                Toast.makeText(this, R.string.custom_language_disabled_too_large, Toast.LENGTH_LONG).show()
-            null -> Unit
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setupNavigation()
+        setupMiniPlayer()
+        setupWebViewBridge()
+        observePlayback()
+        observeSettings()
+    }
+
+    private fun setupNavigation() {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+
+        binding.bottomTabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                when (tab.position) {
+                    0 -> navController.navigate(R.id.nav_home)
+                    1 -> navController.navigate(R.id.nav_search)
+                    2 -> navController.navigate(R.id.nav_favorites)
+                    3 -> navController.navigate(R.id.nav_settings)
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // Return to root of the tab if reselected
+                when (tab?.position) {
+                    0 -> navController.popBackStack(R.id.nav_home, false)
+                    1 -> navController.popBackStack(R.id.nav_search, false)
+                    2 -> navController.popBackStack(R.id.nav_favorites, false)
+                    3 -> navController.popBackStack(R.id.nav_settings, false)
+                }
+            }
+        })
+    }
+
+    private fun setupMiniPlayer() {
+        val mini = binding.miniPlayerView
+
+        mini.miniPlayerRoot.setOnClickListener {
+            // Expand to full One UI Player Bottom Sheet
+            val playerSheet = PlayerBottomSheetFragment.newInstance()
+            playerSheet.show(supportFragmentManager, PlayerBottomSheetFragment.TAG)
         }
-        window.decorView.postDelayed(
-            { CrashReporter.resetLaunchCrashStreak(this) },
-            CrashReporter.EARLY_CRASH_WINDOW_MS,
-        )
 
+        mini.miniPlayerPlayPause.setOnClickListener {
+            playerController.togglePlayPause()
+        }
+
+        mini.miniPlayerNext.setOnClickListener {
+            playerController.skipToNext()
+        }
+
+        mini.miniPlayerLike.setOnClickListener {
+            currentPlayingTrack?.let { track ->
+                // Toggle favorite
+            }
+        }
+    }
+
+    private fun setupWebViewBridge() {
         apiWebView = WebView(this).apply {
-            // Must be attached to a real window (not just held in a field) - Android throttles
-            // JS timers/rendering ticks on WebViews that are never added to the view hierarchy,
-            // which otherwise makes the WebViewApiBridge's fetch calls succeed inconsistently.
-            // 1x1 + alpha 0 keeps it invisible without making it inactive (unlike GONE/detached).
             alpha = 0f
             addContentView(this, android.view.ViewGroup.LayoutParams(1, 1))
             webBridge.setWebView(this)
         }
+    }
 
-        deepLinkTarget = DeepLinkTarget.fromIntent(intent)
+    private fun observePlayback() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                playerController.state.collectLatest { state ->
+                    val track = state.currentTrack
+                    currentPlayingTrack = track
 
-        val currentLang = run {
-            val prefs = getSharedPreferences("sc_settings", MODE_PRIVATE)
-            prefs.getString("language", null)?.let {
-                runCatching { LanguageOption.valueOf(it) }.getOrNull()
-            } ?: LanguageOption.ENGLISH
-        }
+                    val mini = binding.miniPlayerView
+                    if (track != null) {
+                        mini.miniPlayerRoot.visibility = View.VISIBLE
+                        mini.miniPlayerTitle.text = track.title
+                        mini.miniPlayerArtist.text = track.user.username
 
-        val darkMode = run {
-            val prefs = getSharedPreferences("sc_settings", MODE_PRIVATE)
-            prefs.getString("dark_mode", null)?.let {
-                runCatching { DarkModeOption.valueOf(it) }.getOrNull()
-            } ?: DarkModeOption.SYSTEM
-        }
-
-        val isDark = when (darkMode) {
-            DarkModeOption.LIGHT -> false
-            DarkModeOption.DARK -> true
-            DarkModeOption.SYSTEM -> resources.configuration.uiMode and
-                    android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES
-        }
-
-        if (isDark) {
-            enableEdgeToEdge(
-                statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
-                navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
-            )
-        } else {
-            enableEdgeToEdge(
-                statusBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
-                navigationBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
-            )
-        }
-
-        setContent {
-            val settings = settingsRepository.settings.collectAsState(initial = null).value
-            val trackSeedColor by playerController.seedColor.collectAsState()
-            val systemDark = androidx.compose.foundation.isSystemInDarkTheme()
-
-            if (settings == null) {
-                androidx.compose.material3.Surface(
-                    color = if (systemDark) androidx.compose.ui.graphics.Color.Black else androidx.compose.ui.graphics.Color.White,
-                ) {}
-                return@setContent
-            }
-
-            val isDark = when (settings.darkMode) {
-                DarkModeOption.SYSTEM -> systemDark
-                DarkModeOption.LIGHT -> false
-                DarkModeOption.DARK -> true
-            }
-
-            val backgroundMode = settings.backgroundMode
-            val pixelWash = backgroundMode == com.savoo.scclient.data.repository.AppBackgroundMode.DYNAMIC &&
-                trackSeedColor != null
-            val customBackground = settings.backgroundCustomColor
-                .takeIf { backgroundMode == com.savoo.scclient.data.repository.AppBackgroundMode.CUSTOM }
-
-            LaunchedEffect(isDark, pixelWash, customBackground) {
-                val controller = WindowCompat.getInsetsController(window, window.decorView)
-                val lightBars = when {
-                    pixelWash -> false
-                    customBackground != null -> customBackground.luminance() > 0.5f
-                    else -> !isDark
-                }
-                controller.isAppearanceLightStatusBars = lightBars
-                controller.isAppearanceLightNavigationBars = lightBars
-            }
-
-            val effectiveTheme = if (settings.dynamicFromTrack && trackSeedColor != null) {
-                AppColorTheme.DYNAMIC_TRACK
-            } else {
-                settings.colorTheme
-            }
-
-            ResonaTheme(
-                colorTheme = effectiveTheme,
-                darkTheme = isDark,
-                overrideSeedColor = when {
-                    settings.dynamicFromTrack -> trackSeedColor
-                    settings.colorTheme == AppColorTheme.CUSTOM -> settings.customSeedColor
-                    else -> null
-                },
-                tintSurfaces = pixelWash,
-                customBackground = customBackground,
-                fontRoundness = settings.fontRoundness.takeIf { settings.fontRoundnessEnabled },
-            ) {
-                androidx.compose.runtime.CompositionLocalProvider(
-                    com.savoo.scclient.ui.haptics.LocalHapticsEnabled provides settings.hapticsEnabled,
-                    com.savoo.scclient.ui.haptics.LocalHapticsIntensity provides settings.hapticsIntensity,
-                    com.savoo.scclient.ui.components.LocalDividerStyle provides settings.dividerStyle,
-                    com.savoo.scclient.ui.components.LocalMarqueeTitles provides settings.marqueeTitles,
-                    com.savoo.scclient.ui.components.LocalArtworkGlowSource provides settings.artworkGlowSource,
-                    com.savoo.scclient.ui.components.LocalAnimatedArtwork provides settings.animatedArtwork,
-                    com.savoo.scclient.ui.components.LocalLiquidGlass provides settings.liquidGlass,
-                    com.savoo.scclient.ui.components.LocalDockBackground provides settings.dockBackground,
-                ) {
-                    var eulaDismissed by androidx.compose.runtime.remember { mutableStateOf(false) }
-                    var onboardingDismissed by androidx.compose.runtime.remember { mutableStateOf(false) }
-                    val scope = rememberCoroutineScope()
-                    when {
-                        locked -> {
-                            LockScreen(
-                                store = appLockStore,
-                                onUnlocked = { locked = false },
-                                onDuress = { DuressWipe.trigger(this@MainActivity) },
-                            )
+                        mini.miniPlayerArt.load(track.artworkUrl?.replace("-large", "-t300x300")) {
+                            crossfade(true)
+                            placeholder(R.drawable.logo_git)
+                            error(R.drawable.logo_git)
                         }
-                        !settings.eulaAccepted && !eulaDismissed -> {
-                            EulaGateScreen(
-                                onAccept = {
-                                    eulaDismissed = true
-                                    scope.launch { settingsRepository.setEulaAccepted(true) }
-                                },
-                                onDecline = { finish() },
-                            )
+
+                        mini.miniPlayerPlayPause.setImageResource(
+                            if (state.isPlaying) R.drawable.ic_oui_pause else R.drawable.ic_oui_play
+                        )
+
+                        if (track.durationMs > 0) {
+                            val progress = ((state.positionMs * 1000L) / track.durationMs).toInt()
+                            mini.miniPlayerProgress.progress = progress.coerceIn(0, 1000)
                         }
-                        !settings.onboardingCompleted && !onboardingDismissed -> {
-                            OnboardingScreen(
-                                onFinish = {
-                                    onboardingDismissed = true
-                                    scope.launch { settingsRepository.setOnboardingCompleted(true) }
-                                },
-                            )
-                        }
-                        else -> RootScreen(initialDeepLink = deepLinkTarget, deepLinkKey = deepLinkKey)
+                    } else {
+                        mini.miniPlayerRoot.visibility = View.GONE
                     }
-                    val challenge by dataDomeChallenge.pending.collectAsState()
-                    if (!locked) {
-                        challenge?.let { pending ->
-                            androidx.compose.runtime.key(pending.url) {
-                                com.savoo.scclient.ui.components.DataDomeChallengeSheet(
-                                    challenge = pending,
-                                    onPassed = { dataDomeChallenge.onPassed(it) },
-                                    onDismiss = { dataDomeChallenge.onDismissed() },
-                                )
-                            }
-                        }
+                }
+            }
+        }
+    }
+
+    private fun observeSettings() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                settingsRepository.settings.collectLatest { s ->
+                    val targetNightMode = when (s.darkMode) {
+                        DarkModeOption.SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                        DarkModeOption.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+                        DarkModeOption.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+                    }
+                    if (AppCompatDelegate.getDefaultNightMode() != targetNightMode) {
+                        AppCompatDelegate.setDefaultNightMode(targetNightMode)
                     }
                 }
             }
@@ -267,10 +215,26 @@ class MainActivity : FragmentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        // singleTask means a deep link tapped while the app is already running arrives here, not in onCreate.
         setIntent(intent)
-        deepLinkTarget = DeepLinkTarget.fromIntent(intent)
-        deepLinkKey++
+        val deepLinkTarget = DeepLinkTarget.fromIntent(intent)
+        when (deepLinkTarget) {
+            is DeepLinkTarget.Artist -> {
+                val bundle = Bundle().apply { putLong("userId", deepLinkTarget.userId) }
+                navController.navigate(R.id.nav_artist, bundle)
+            }
+            is DeepLinkTarget.Playlist -> {
+                val bundle = Bundle().apply { putLong("playlistId", deepLinkTarget.playlistId) }
+                navController.navigate(R.id.nav_playlist, bundle)
+            }
+            is DeepLinkTarget.Shortcut -> {
+                when (deepLinkTarget.target) {
+                    ShortcutTarget.FAVORITES -> navController.navigate(R.id.nav_favorites)
+                    ShortcutTarget.OFFLINE -> navController.navigate(R.id.nav_offline)
+                    ShortcutTarget.SEARCH -> navController.navigate(R.id.nav_search)
+                }
+            }
+            else -> {}
+        }
     }
 
     override fun onDestroy() {

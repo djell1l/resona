@@ -6,9 +6,6 @@ import com.savoo.scclient.data.repository.PlaylistsRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.UnstableApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import com.savoo.scclient.R
 import com.savoo.scclient.data.local.ExcludedArtistDao
 import com.savoo.scclient.data.local.FavoritesDao
@@ -364,7 +361,7 @@ class PlayerViewModel @Inject constructor(
             undoController.show(
                 UndoAction(
                     messageRes = if (previous == null) R.string.favorite_added else R.string.favorite_removed,
-                    icon = if (previous == null) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    iconRes = if (previous == null) R.drawable.ic_oui_heart else R.drawable.ic_oui_heart_outline,
                     onUndo = { repository.restoreTrackFavorite(track, previous) },
                 )
             )

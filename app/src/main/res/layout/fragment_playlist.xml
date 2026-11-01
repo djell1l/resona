@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dev.oneuiproject.oneui.layout.ToolbarLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:expanded="false"
+    app:title="@string/playlist_title">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="always"
+        android:paddingHorizontal="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- Playlist Header Card -->
+            <dev.oneuiproject.oneui.widget.RoundedLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:background="?attr/roundedCornerColor"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="20dp"
+                app:roundedCorners="all">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/playlist_artwork"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/logo_git"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.OneUI.ArtworkMedium" />
+
+                <TextView
+                    android:id="@+id/playlist_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary"
+                    tools:text="Playlist Title" />
+
+                <TextView
+                    android:id="@+id/playlist_creator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textSize="14sp"
+                    android:textColor="?android:attr/textColorSecondary"
+                    tools:text="Created by Artist • 32 tracks" />
+
+                <!-- Action Buttons: Play All & Shuffle -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_playlist_play"
+                        style="@style/OneUI.ButtonStyleColored"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="@string/player_play"
+                        app:icon="@drawable/ic_oui_play" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_playlist_shuffle"
+                        style="@style/OneUI.ButtonStyleOutline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="10dp"
+                        android:text="@string/player_shuffle"
+                        app:icon="@drawable/ic_oui_shuffle" />
+                </LinearLayout>
+
+            </dev.oneuiproject.oneui.widget.RoundedLinearLayout>
+
+            <!-- Track List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_playlist_tracks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_track" />
+
+            <androidx.appcompat.widget.SeslProgressBar
+                android:id="@+id/playlist_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</dev.oneuiproject.oneui.layout.ToolbarLayout>

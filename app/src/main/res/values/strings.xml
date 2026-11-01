@@ -1000,4 +1000,38 @@
     <string name="settings_liquid_glass_desc">Translucent glass on the dock and player, like on iOS</string>
     <string name="settings_dock_background">Background behind the dock</string>
     <string name="settings_dock_background_desc">Solid background behind the dock. When off, content shows through it</string>
+
+    <!-- One UI 8 Translations & Navigation Additions -->
+    <string name="action_more">More options</string>
+    <string name="action_close">Close</string>
+    <string name="action_sort">Sort</string>
+    <string name="player_skip_next">Next track</string>
+    <string name="player_skip_prev">Previous track</string>
+    <string name="player_now_playing">Now Playing</string>
+    <string name="home_mix_title">Your Mix</string>
+    <string name="home_mix_subtitle">Personalized endless music recommendations</string>
+    <string name="home_quick_picks">Quick Picks</string>
+    <string name="settings_category_account">Account &amp; Sync</string>
+    <string name="settings_category_appearance">Appearance &amp; Display</string>
+    <string name="settings_category_audio">Audio &amp; Playback</string>
+    <string name="settings_category_security">Security &amp; Privacy</string>
+    <string name="settings_category_about">About</string>
+    <string name="settings_dark_mode">Dark mode</string>
+    <string name="dark_mode_system">Match phone settings</string>
+    <string name="dark_mode_light">Light</string>
+    <string name="dark_mode_dark">Dark</string>
+    <string name="settings_stream_quality">Streaming quality</string>
+    <string name="settings_app_lock">App Lock</string>
+    <string name="settings_app_lock_off">Off</string>
+    <string name="login_not_logged_in">Not signed in</string>
+    <string name="login_logged_in">Signed in to SoundCloud</string>
+    <string name="login_subtitle">Sync your likes and playlists</string>
+    <string name="login_button">Sign In</string>
+    <string name="account_log_out">Sign Out</string>
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="artist_title">Artist</string>
+    <string name="artist_top_tracks">Top Tracks</string>
+    <string name="playlist_title">Playlist</string>
 </resources>
