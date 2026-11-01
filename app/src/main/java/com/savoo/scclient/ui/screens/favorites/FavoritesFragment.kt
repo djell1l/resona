@@ -108,7 +108,7 @@ class FavoritesFragment : Fragment() {
             },
             onLikeClick = { track ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    favoritesRepository.toggleFavorite(track)
+                    favoritesRepository.toggleTrackFavorite(track)
                 }
             }
         )
@@ -162,12 +162,12 @@ class FavoritesFragment : Fragment() {
                     }
                 }
                 launch {
-                    favoritesDao.observeAllPlaylists().collectLatest { playlists ->
+                    favoritesDao.getAllPlaylists().collectLatest { playlists ->
                         playlistAdapter.submitList(playlists.map { it.toPlaylist() })
                     }
                 }
                 launch {
-                    favoritesDao.observeAllArtists().collectLatest { artists ->
+                    favoritesDao.getAllArtists().collectLatest { artists ->
                         artistAdapter.submitList(artists.map { it.toUser() })
                     }
                 }

@@ -64,7 +64,7 @@ class HomeFragment : Fragment() {
                 viewModel.playerController.play(track)
             },
             onLikeClick = { track ->
-                // Toggle favorite
+                viewModel.toggleFavorite(track)
             }
         )
         binding.rvQuickPicks.adapter = quickPickAdapter

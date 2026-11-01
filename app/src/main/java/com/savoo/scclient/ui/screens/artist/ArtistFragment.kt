@@ -24,6 +24,7 @@ class ArtistFragment : Fragment() {
 
     @Inject lateinit var trackRepository: TrackRepository
     @Inject lateinit var playerController: PlayerController
+    @Inject lateinit var favoritesRepository: com.savoo.scclient.data.repository.FavoritesRepository
 
     private lateinit var trackAdapter: TrackAdapter
     private var userId: Long = 0L
@@ -48,6 +49,11 @@ class ArtistFragment : Fragment() {
         trackAdapter = TrackAdapter(
             onTrackClick = { track ->
                 playerController.play(track)
+            },
+            onLikeClick = { track ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    favoritesRepository.toggleTrackFavorite(track)
+                }
             }
         )
         binding.rvArtistTracks.adapter = trackAdapter

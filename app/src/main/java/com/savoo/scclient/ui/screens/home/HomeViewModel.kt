@@ -499,6 +499,12 @@ class HomeViewModel @Inject constructor(
         playerController.playQueue(tracks, idx, repeatAll = true, tag = tag)
     }
 
+    fun toggleFavorite(track: Track) {
+        viewModelScope.launch {
+            favoritesRepository.toggleTrackFavorite(track)
+        }
+    }
+
     fun togglePreferredArtist(artistId: Long) {
         _preferredArtistIds.update { if (artistId in it) it - artistId else it + artistId }
     }

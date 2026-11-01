@@ -77,6 +77,9 @@ class SearchFragment : Fragment() {
         trackAdapter = TrackAdapter(
             onTrackClick = { track ->
                 viewModel.playerController.play(track)
+            },
+            onLikeClick = { track ->
+                viewModel.toggleFavorite(track)
             }
         )
 

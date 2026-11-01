@@ -25,6 +25,7 @@ class PlaylistFragment : Fragment() {
 
     @Inject lateinit var playlistsRepository: PlaylistsRepository
     @Inject lateinit var playerController: PlayerController
+    @Inject lateinit var favoritesRepository: com.savoo.scclient.data.repository.FavoritesRepository
 
     private lateinit var trackAdapter: TrackAdapter
     private var playlistId: Long = 0L

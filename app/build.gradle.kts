@@ -150,7 +150,7 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.8.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.8.5")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
-    implementation(libs.activity.compose) // for ComponentActivity / OnBackPressedDispatcher
+    implementation("androidx.activity:activity-ktx:1.9.3")
     implementation(libs.lifecycle.runtime.ktx)
 
     // Image loading for XML views

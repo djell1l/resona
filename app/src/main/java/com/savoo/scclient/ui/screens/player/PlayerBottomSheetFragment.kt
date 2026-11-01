@@ -12,7 +12,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.savoo.scclient.MainActivity
 import com.savoo.scclient.R
+import com.savoo.scclient.data.local.FavoritesDao
 import com.savoo.scclient.data.model.Track
 import com.savoo.scclient.data.repository.FavoritesRepository
 import com.savoo.scclient.databinding.FragmentPlayerBinding
@@ -31,6 +33,7 @@ class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
 
     @Inject lateinit var playerController: PlayerController
     @Inject lateinit var favoritesRepository: FavoritesRepository
+    @Inject lateinit var favoritesDao: FavoritesDao
 
     private var currentTrack: Track? = null
     private var isUserTracking = false
@@ -79,7 +82,7 @@ class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
         binding.btnPlayerFav.setOnClickListener {
             currentTrack?.let { track ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    favoritesRepository.toggleFavorite(track)
+                    favoritesRepository.toggleTrackFavorite(track)
                 }
             }
         }
@@ -88,7 +91,7 @@ class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
             currentTrack?.user?.id?.let { userId ->
                 dismiss()
                 val bundle = Bundle().apply { putLong("userId", userId) }
-                // Navigate via activity or parent nav controller
+                (activity as? MainActivity)?.navigateTo(R.id.nav_artist, bundle)
             }
         }
 
@@ -119,11 +122,21 @@ class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
     private fun observePlayback() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                var favoriteJob: kotlinx.coroutines.Job? = null
                 playerController.state.collectLatest { state ->
                     currentTrack = state.currentTrack
                     val track = state.currentTrack
 
                     if (track != null) {
+                        favoriteJob?.cancel()
+                        favoriteJob = launch {
+                            favoritesDao.isTrackFavorite(track.id).collectLatest { isFav ->
+                                binding.btnPlayerFav.setImageResource(
+                                    if (isFav) R.drawable.ic_oui_heart else R.drawable.ic_oui_heart_outline
+                                )
+                            }
+                        }
+
                         binding.playerTitle.text = track.title
                         binding.playerArtist.text = track.user.username
                         binding.playerArtwork.load(track.artworkUrl?.replace("-large", "-t500x500")) {
@@ -138,6 +151,8 @@ class PlayerBottomSheetFragment : BottomSheetDialogFragment() {
                             val progress = ((state.positionMs * 1000L) / track.durationMs).toInt()
                             binding.playerSeekbar.progress = progress.coerceIn(0, 1000)
                         }
+                    } else {
+                        favoriteJob?.cancel()
                     }
 
                     // Play/Pause icon

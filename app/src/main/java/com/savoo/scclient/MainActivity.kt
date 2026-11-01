@@ -18,9 +18,11 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import coil.load
 import com.google.android.material.tabs.TabLayout
+import com.savoo.scclient.data.local.FavoritesDao
 import com.savoo.scclient.data.model.Track
 import com.savoo.scclient.data.remote.WebViewApiBridge
 import com.savoo.scclient.data.repository.DarkModeOption
+import com.savoo.scclient.data.repository.FavoritesRepository
 import com.savoo.scclient.data.repository.LanguageOption
 import com.savoo.scclient.data.repository.SettingsRepository
 import com.savoo.scclient.data.repository.systemDefaultLanguage
@@ -46,14 +48,20 @@ class MainActivity : AppCompatActivity() {
 
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var playerController: PlayerController
+    @Inject lateinit var favoritesRepository: FavoritesRepository
+    @Inject lateinit var favoritesDao: FavoritesDao
     @Inject lateinit var webBridge: WebViewApiBridge
     @Inject lateinit var appLockStore: AppLockStore
     @Inject lateinit var dataDomeChallenge: com.savoo.scclient.data.remote.DataDomeChallenge
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var navController: NavController
+    lateinit var navController: NavController
     private var apiWebView: WebView? = null
     private var currentPlayingTrack: Track? = null
+
+    fun navigateTo(destinationId: Int, args: Bundle? = null) {
+        navController.navigate(destinationId, args)
+    }
 
     override fun attachBaseContext(newBase: Context) {
         val lang = try {
@@ -148,7 +156,9 @@ class MainActivity : AppCompatActivity() {
 
         mini.miniPlayerLike.setOnClickListener {
             currentPlayingTrack?.let { track ->
-                // Toggle favorite
+                lifecycleScope.launch {
+                    favoritesRepository.toggleTrackFavorite(track)
+                }
             }
         }
     }
@@ -164,12 +174,22 @@ class MainActivity : AppCompatActivity() {
     private fun observePlayback() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                var favoriteJob: kotlinx.coroutines.Job? = null
                 playerController.state.collectLatest { state ->
                     val track = state.currentTrack
                     currentPlayingTrack = track
 
                     val mini = binding.miniPlayerView
                     if (track != null) {
+                        favoriteJob?.cancel()
+                        favoriteJob = launch {
+                            favoritesDao.isTrackFavorite(track.id).collectLatest { isFav ->
+                                mini.miniPlayerLike.setImageResource(
+                                    if (isFav) R.drawable.ic_oui_heart else R.drawable.ic_oui_heart_outline
+                                )
+                            }
+                        }
+
                         mini.miniPlayerRoot.visibility = View.VISIBLE
                         mini.miniPlayerTitle.text = track.title
                         mini.miniPlayerArtist.text = track.user.username
@@ -189,6 +209,7 @@ class MainActivity : AppCompatActivity() {
                             mini.miniPlayerProgress.progress = progress.coerceIn(0, 1000)
                         }
                     } else {
+                        favoriteJob?.cancel()
                         mini.miniPlayerRoot.visibility = View.GONE
                     }
                 }
