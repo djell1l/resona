@@ -15,34 +15,41 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- One UI Search Bar Input -->
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/search_view"
+        <!-- One UI 8 Continuous Curvature Search Bar Container -->
+        <dev.oneuiproject.oneui.widget.RoundedFrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="10dp"
             android:background="?attr/roundedCornerColor"
-            app:iconifiedByDefault="false"
-            app:queryHint="@string/search_hint" />
+            app:roundedCorners="all">
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_view"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@android:color/transparent"
+                app:iconifiedByDefault="false"
+                app:queryHint="@string/search_hint" />
+
+        </dev.oneuiproject.oneui.widget.RoundedFrameLayout>
 
         <!-- One UI Rounded Tab Layout (Tracks, Artists, Playlists) -->
         <dev.oneuiproject.oneui.widget.RoundedTabLayout
             android:id="@+id/search_tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="10dp"
             app:tabGravity="fill"
             app:tabMode="fixed" />
 
         <!-- Search Results Container -->
-        <dev.oneuiproject.oneui.widget.RoundedFrameLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            app:roundedCorners="top_left|top_right">
+            android:layout_weight="1">
 
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipe_refresh"
@@ -53,20 +60,13 @@
                     android:id="@+id/rv_search_results"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="?android:colorBackground"
+                    android:clipToPadding="false"
                     android:overScrollMode="always"
+                    android:paddingBottom="96dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_track" />
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-            <!-- Auto-hide Index Scroll View -->
-            <dev.oneuiproject.oneui.widget.AutoHideIndexScrollView
-                android:id="@+id/index_scroll_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="8dp"
-                android:layout_marginBottom="60dp" />
 
             <!-- Empty / Search State View -->
             <LinearLayout
@@ -81,8 +81,8 @@
                 tools:visibility="visible">
 
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
                     android:src="@drawable/ic_oui_search"
                     android:tint="?android:attr/textColorSecondary"
                     android:contentDescription="@string/nav_search" />
@@ -93,8 +93,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:text="@string/search_empty"
-                    android:textSize="16sp"
-                    android:textColor="?android:attr/textColorSecondary" />
+                    android:textColor="?android:attr/textColorSecondary"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <!-- Loading Spinner -->
@@ -106,7 +106,7 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
-        </dev.oneuiproject.oneui.widget.RoundedFrameLayout>
+        </FrameLayout>
 
     </LinearLayout>
 

@@ -10,6 +10,7 @@
         <item name="colorOnPrimary">@android:color/white</item>
         <item name="colorOnSecondary">@android:color/white</item>
         <item name="colorOnSurface">?android:attr/textColorPrimary</item>
+        <item name="bottomSheetDialogTheme">@style/OneUI.BottomSheetDialog</item>
     </style>
 
     <style name="Theme.Resona.Splash" parent="Theme.Resona">

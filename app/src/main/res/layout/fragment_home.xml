@@ -6,8 +6,8 @@
     android:id="@+id/toolbar_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:expanded="true"
-    app:expandable="true"
+    app:expanded="false"
+    app:expandable="false"
     app:title="@string/app_name">
 
     <androidx.core.widget.NestedScrollView
@@ -15,189 +15,408 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:overScrollMode="always"
-        android:paddingHorizontal="16dp">
+        android:overScrollMode="always">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="24dp">
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="96dp">
 
-            <!-- Greeting section -->
-            <TextView
-                android:id="@+id/home_greeting"
+            <!-- Greeting Banner with Avatar & Time of Day -->
+            <LinearLayout
+                android:id="@+id/header_greeting_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
-                tools:text="Good evening" />
+                android:layout_marginBottom="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <!-- Your Mix Card -->
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/img_user_avatar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/logo_git"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.OneUI.Circle" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/home_greeting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        tools:text="Good evening" />
+
+                    <TextView
+                        android:id="@+id/home_username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="13sp"
+                        tools:text="Welcome to Resona" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Hero Mix Card with Continuous Curvature and Artwork Collage -->
             <dev.oneuiproject.oneui.widget.RoundedLinearLayout
                 android:id="@+id/mix_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="24dp"
                 android:background="?attr/roundedCornerColor"
                 android:orientation="vertical"
                 android:padding="16dp"
                 app:roundedCorners="all">
 
+                <!-- Header of the mix card -->
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
+                        android:layout_toStartOf="@+id/btn_play_mix"
+                        android:layout_marginEnd="12dp"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/home_mix_title"
+                            android:textColor="?android:attr/textColorPrimary"
                             android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="?android:attr/textColorPrimary" />
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/mix_subtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="3dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:text="@string/home_mix_subtitle"
-                            android:textSize="13sp"
-                            android:textColor="?android:attr/textColorSecondary" />
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:textSize="13sp" />
                     </LinearLayout>
 
-                    <androidx.appcompat.widget.AppCompatButton
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/btn_play_mix"
-                        style="@style/OneUI.ButtonStyleColored"
+                        style="@style/OneUI.FloatingActionButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:text="@string/player_play"
-                        android:drawableStart="@drawable/ic_oui_play"
-                        android:drawablePadding="6dp" />
+                        android:src="@drawable/ic_oui_play"
+                        app:fabCustomSize="52dp"
+                        android:contentDescription="@string/player_play" />
                 </RelativeLayout>
+
+                <!-- Artwork Collage (Center squircle + 2 corner squircles) -->
+                <FrameLayout
+                    android:id="@+id/mix_collage_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <!-- Corner artwork 1 (top-start) -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/img_mix_corner1"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:layout_gravity="start|top"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/logo_git"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.OneUI.ArtworkSmall" />
+
+                    <!-- Corner artwork 2 (bottom-end) -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/img_mix_corner2"
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="4dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/logo_git"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.OneUI.ArtworkSmall" />
+
+                    <!-- Center Large Artwork -->
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/img_mix_center"
+                        android:layout_width="140dp"
+                        android:layout_height="140dp"
+                        android:layout_gravity="center"
+                        android:elevation="6dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/logo_git"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.OneUI.ArtworkLarge" />
+
+                </FrameLayout>
 
             </dev.oneuiproject.oneui.widget.RoundedLinearLayout>
 
-            <!-- Quick Jump: Charts and History Cards -->
+            <!-- SECTION 1: Jump Back In (History) -->
             <LinearLayout
+                android:id="@+id/section_jump_back_in"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:orientation="horizontal">
+                android:layout_marginBottom="24dp"
+                android:orientation="vertical">
 
-                <dev.oneuiproject.oneui.widget.RoundedLinearLayout
-                    android:id="@+id/card_charts"
-                    android:layout_width="0dp"
+                <RelativeLayout
+                    android:id="@+id/header_jump_back_in"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    android:background="?attr/roundedCornerColor"
+                    android:layout_marginBottom="12dp"
                     android:clickable="true"
-                    android:focusable="true"
-                    android:orientation="vertical"
-                    android:padding="14dp"
-                    app:roundedCorners="all">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_oui_charts"
-                        android:tint="?attr/colorPrimaryDark"
-                        android:contentDescription="@string/charts_title" />
+                    android:focusable="true">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/charts_title"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="?android:attr/textColorPrimary" />
-                </dev.oneuiproject.oneui.widget.RoundedLinearLayout>
-
-                <dev.oneuiproject.oneui.widget.RoundedLinearLayout
-                    android:id="@+id/card_history"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:background="?attr/roundedCornerColor"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:orientation="vertical"
-                    android:padding="14dp"
-                    app:roundedCorners="all">
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/home_section_jump_back_in"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_oui_history"
-                        android:tint="?attr/colorPrimaryDark"
-                        android:contentDescription="@string/history_title" />
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_oui_chevron_right"
+                        android:tint="?android:attr/textColorSecondary"
+                        android:contentDescription="See all" />
+                </RelativeLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/history_title"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="?android:attr/textColorPrimary" />
-                </dev.oneuiproject.oneui.widget.RoundedLinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_jump_back_in"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:overScrollMode="always"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_home_track" />
 
             </LinearLayout>
 
-            <!-- Recently Played Section -->
-            <TextView
-                android:id="@+id/title_recent"
+            <!-- SECTION 2: From Your Favorites -->
+            <LinearLayout
+                android:id="@+id/section_favorites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/history_title"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:layout_marginBottom="24dp"
+                android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_recent"
+                <RelativeLayout
+                    android:id="@+id/header_favorites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/home_section_favorites"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_oui_chevron_right"
+                        android:tint="?android:attr/textColorSecondary"
+                        android:contentDescription="See all" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_favorites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:overScrollMode="always"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_home_track" />
+
+            </LinearLayout>
+
+            <!-- SECTION 3: Your Artists -->
+            <LinearLayout
+                android:id="@+id/section_artists"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="18dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_quick_pick" />
+                android:layout_marginBottom="24dp"
+                android:orientation="vertical">
 
-            <!-- Recommendations / Quick Picks Section -->
-            <TextView
+                <RelativeLayout
+                    android:id="@+id/header_artists"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/home_section_artists"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_oui_chevron_right"
+                        android:tint="?android:attr/textColorSecondary"
+                        android:contentDescription="See all" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_artists"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:overScrollMode="always"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_home_artist" />
+
+            </LinearLayout>
+
+            <!-- SECTION 4: Favorite Albums & Playlists -->
+            <LinearLayout
+                android:id="@+id/section_playlists"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/home_quick_picks"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:layout_marginBottom="24dp"
+                android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_quick_picks"
+                <RelativeLayout
+                    android:id="@+id/header_playlists"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/home_section_playlists"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_oui_chevron_right"
+                        android:tint="?android:attr/textColorSecondary"
+                        android:contentDescription="See all" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_playlists"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:overScrollMode="always"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_home_playlist" />
+
+            </LinearLayout>
+
+            <!-- SECTION 5: Offline Ready -->
+            <LinearLayout
+                android:id="@+id/section_offline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item_track" />
+                android:layout_marginBottom="24dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
 
-            <!-- Loading ProgressBar -->
+                <RelativeLayout
+                    android:id="@+id/header_offline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/home_section_offline"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_oui_chevron_right"
+                        android:tint="?android:attr/textColorSecondary"
+                        android:contentDescription="See all" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_offline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:overScrollMode="always"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_home_track" />
+
+            </LinearLayout>
+
+            <!-- Loading Spinner -->
             <androidx.appcompat.widget.SeslProgressBar
                 android:id="@+id/home_loading"
                 android:layout_width="wrap_content"

@@ -6,14 +6,25 @@
     </style>
 
     <style name="ShapeAppearance.OneUI.ArtworkMedium" parent="ShapeAppearance.MaterialComponents.MediumComponent">
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">18dp</item>
     </style>
 
     <style name="ShapeAppearance.OneUI.ArtworkLarge" parent="ShapeAppearance.MaterialComponents.LargeComponent">
-        <item name="cornerSize">28dp</item>
+        <item name="cornerSize">26dp</item>
     </style>
 
     <style name="ShapeAppearance.OneUI.Circle" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="OneUI.BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/OneUI.BottomSheetModal</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="OneUI.BottomSheetModal" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
     </style>
 </resources>
